@@ -1,4 +1,35 @@
 extends layout
 
 block content
-  h1= title
+  h1= config.title
+
+  main#chapters
+
+  table#examples
+    thead 
+    tbody
+
+  template#chapter
+    article
+      h1
+      blockquote
+      nav
+        ol
+
+  template#section
+    section
+      h2
+
+  template#part
+    .part
+      h3
+
+  template#example-row
+    tr
+      - var elems = 1
+      while elems <= 5
+        - elems++
+        td
+
+  #dlist.hide= ordList
+  #clist.hide= chapData
