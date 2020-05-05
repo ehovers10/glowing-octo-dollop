@@ -17,8 +17,11 @@ var config = {
           url: "/js/main.js"
         },{
           type: 'script',
+          url: 'https://cdn.jsdelivr.net/npm/marked/marked.min.js'
+        }/*,{
+          type: 'script',
           url: 'https://kit.fontawesome.com/a6b5fe2a26.js'
-        }
+        }*/
       ]
     };
 
@@ -27,6 +30,8 @@ const airData = {
         baseId: "appi1XzlXxiSkuLHI"
       };
 
+var ordList = "";
+var chapData = "";
 
 ListEm.base(airData.apiKey,airData.baseId)
   .then(function(base) {
@@ -36,17 +41,18 @@ ListEm.base(airData.apiKey,airData.baseId)
     console.error("Page build failure: ", error);
     });
     ListEm.chapters(base).then(async function(chapList) {
-      hydratedChapters = [];
+      var hydratedChapters = [];
       for (var i = 0; i < chapList.length; i++) {
         hydratedChapters.push(await ListEm.parts(base,chapList[i],'Sections'));
       }
+      console.time('Chapters hydrated');
       return hydratedChapters;
     }, function(error) {
       console.error("Page build failure: ", error);
     }).then(async function(chapList) {
-      hydratedSections = [];
       for (var i = 0; i < chapList.length; i++) {
         if (chapList[i].parts) {
+          var hydratedSections = [];
           for (var j = 0; j < chapList[i].parts.length; j++) {
             hydratedSections.push(await ListEm.parts(base,chapList[i].parts[j],'Parts'));
           }
@@ -54,6 +60,10 @@ ListEm.base(airData.apiKey,airData.baseId)
         }
       }
       chapData = Build.data(chapList);
+      console.time('Sections hydrated');
+      return chapData;
+    }).then(function() {
+      console.log('Page ready to go');
     });
   })
   .then(function(response) {

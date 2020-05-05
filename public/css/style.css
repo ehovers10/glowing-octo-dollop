@@ -1,13 +1,1 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
-}
-
-.hide {
-  opacity: 0;
-  display: none;
-}
+main{width:100vw;max-width:950px;margin:auto;font:16px "Lucida Grande",Helvetica,Arial,sans-serif;color:#222222}aside{display:none}h1,h2,h3,h4,p,table{margin-bottom:1em}h1{font-size:3em}h2{font-size:2em}h3{font-size:1.5em}p{line-height:1.25}a{color:#6600FF;text-decoration:underline dotted #6600FF88}.hide{opacity:0;display:none}.show{opacity:0;display:initial}

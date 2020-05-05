@@ -4,38 +4,62 @@ $(document).ready( function() {
   var chapListText = $("#clist").text().trim();
   var chapList = JSON.parse(chapListText);
 
-  tableInit(exList);
-  mainInit(chapList);
+  var main = document.querySelector('main');
+  tableInit(exList,main);
+  mainInit(chapList,main);
 
   $('#dlist').remove();
   $('#clist').remove();
+
+  $('article').addClass('hide');
+  $('#Discourse-as-Collaborative-Inquiry').removeClass('hide').addClass('show');
+  $('#main-nav a').click(function() {
+    var item = $(this).attr('href');
+    $('article').removeClass('show').addClass('hide');
+    $(item).removeClass('hide').addClass('show');
+
+    return false;
+  });
 });
 
-function tableInit(list) {
-  var table = document.querySelector('#examples').lastChild;
-  var template = document.querySelector('#example-row');
+function tableInit(list,attach) {
+  var table = document.querySelector('#extra');
+  var cloneEx = table.content.cloneNode(true);
+  cloneEx.querySelector('article').setAttribute('id','examples');
+
+  var rowTemplate = document.querySelector('#example-row');
 
   for (var i = 0; i < list.length; i++) {
-    var clone = template.content.cloneNode(true);
+    var clone = rowTemplate.content.cloneNode(true);
     var td = clone.querySelectorAll("td");
     for (var j = 0; j < list[i].sentences.length; j++) {
       td[j].innerHTML = list[i].sentences[j];
     }
-    table.appendChild(clone);
+    cloneEx.querySelector('tbody').appendChild(clone);
   }
+  attach.appendChild(cloneEx);
 }
 
-function mainInit(list) {
-  var main = document.querySelector('#chapters');
-  var template = document.querySelector('#chapter');
+function mainInit(list,attach) {
+  var chapTemplate = document.querySelector('#chapter');
+  var sectTemplate = document.querySelector('#section');
+  var partTemplate = document.querySelector('#part');
+
   for (var i = 0; i < list.length; i++) {
-    var clone = template.content.cloneNode(true);
+    var clone = chapTemplate.content.cloneNode(true);
+    var chapLink = document.createElement('a');
+    chapLink.setAttribute('href', '#' + list[i].title.replace(/\s/g,'-'));
+    chapLink.innerHTML = list[i].title;
+    var chapLinkItem = document.createElement('li');
+    chapLinkItem.appendChild(chapLink);
+    document.querySelector('#chap-nav ol').appendChild(chapLinkItem);
 
     var article = clone.querySelector('article');
     var title = article.querySelector('h1');
     var abstract = article.querySelector('blockquote');
     var nav = article.querySelector('nav');
 
+    article.setAttribute('id',list[i].title.replace(/\s/g,'-'));
     title.innerHTML = list[i].title;
     abstract.innerHTML = list[i].abstract;
     for (var j = 0; j < list[i].parts.length; j++) {
@@ -48,7 +72,6 @@ function mainInit(list) {
       nav.querySelector('ol').appendChild(item);
     }
 
-    var sectTemplate = document.querySelector('#section');
     for (var j = 0; j < list[i].parts.length; j++) {
       var sect = list[i].parts[j];
       var sectClone = sectTemplate.content.cloneNode(true);
@@ -57,19 +80,19 @@ function mainInit(list) {
       sectBody.querySelector('h2').innerHTML = sect.name;
 
       if (sect.parts) {
-        partTemplate = document.querySelector('#part');
         for (var k = 0; k < sect.parts.length; k++) {
           var part = sect.parts[k];
-          var partClone = partTemplate.content.cloneNode(true);
-          var partBody = partClone.querySelector('.part');
-          partBody.querySelector('h3').innerHTML = part.name;
-          if (part.notes) {
-            var partContent = document.createElement('div');
-            partContent.innerHTML = part.notes;            
-            partBody.appendChild(partContent);
+          var partBody = document.createElement('div');
+          partBody.setAttribute('class','part');
+          if (part.name) {
+            var partTitle = document.createElement('h3');            
+            partTitle.innerHTML = part.name;
+            partBody.appendChild(partTitle);
           }
-
-          sectBody.appendChild(partClone);
+          if (part.notes) {
+            partBody.insertAdjacentHTML('beforeend',marked(part.notes));       
+          }
+          sectBody.appendChild(partBody);
         }
       }
       
@@ -77,6 +100,6 @@ function mainInit(list) {
     }
 
     
-    main.appendChild(clone);
+    attach.appendChild(clone);
   }
 }

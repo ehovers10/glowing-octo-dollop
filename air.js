@@ -74,7 +74,6 @@ async function hydrateElement(base,element,type) {
     partDetails.push(await getPartById(base,partIds[i],type));
   }
   element.parts = partDetails;
-  console.log('Chapter hydrated',JSON.stringify(element.parts));
   return element;
 }
 
